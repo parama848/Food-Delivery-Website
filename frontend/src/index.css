@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+*{
+    font-family: 'poppins',sans-serif;
+    list-style: none;
+}
+
+/* scrollbar hidden */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;       /* Chrome, Safari */
+}
+
+.input {
+  @apply border p-2 rounded w-full;
+}
+
+.pay-box {
+  @apply border p-3 rounded flex items-center gap-2 cursor-pointer;
+}
+
+.pay-box.active {
+  @apply border-green-400 bg-green-50;
+}

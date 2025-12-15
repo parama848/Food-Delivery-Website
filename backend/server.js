@@ -183,7 +183,7 @@ app.use(cookieParser());
 ====================== */
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://food-delivery-website-pink-three.vercel.app",
+  "https://food-delivery-website-ruby-theta.vercel.app/",
 ];
 
 app.use(

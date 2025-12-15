@@ -5,6 +5,7 @@ import ListProduct from "./pages/ListProduct";
 import Orders from "./pages/Orders";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
+import AdminLogin from "./pages/AdminLogin";
 
 
 const App = () => {
@@ -17,9 +18,10 @@ const App = () => {
 
         <main className="flex-1 p-6">
           <Routes>
-            <Route path="/add-product" element={<CreateProduct />} />
+            <Route path="/" element={<CreateProduct />} />
             <Route path="/list-product" element={<ListProduct />} />
             <Route path="/orders" element={<Orders />} />
+            <Route path="/admin/login" element={<AdminLogin/>}/>
           </Routes>
         </main>
       </div>

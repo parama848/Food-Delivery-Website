@@ -1,34 +1,72 @@
-import React from "react";
-import logo from '../assets/logo.jpg'
+import React, { useContext, useEffect } from "react";
+import { AdminAuthContext } from "../context/AdminAuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const { admin, logout } = useContext(AdminAuthContext);
+  const navigate = useNavigate();
+
+  /* =========================
+     AUTO REDIRECT IF LOGGED OUT
+     ========================= */
+  useEffect(() => {
+    if (!admin) {
+      navigate("/admin/login", { replace: true });
+    }
+  }, [admin, navigate]);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/admin/login", { replace: true });
+  };
+
   return (
-    <header className="w-full bg-white border-b shadow-sm">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        
-        {/* Left: Brand */}
+    <header className="w-full bg-white border-b border-gray-200">
+      <div
+        className="
+          h-14
+          px-4 sm:px-6
+          flex items-center justify-between
+        "
+      >
+        {/* LEFT SIDE (SPACE FOR HAMBURGER) */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-green-600 flex items-center justify-center text-white font-bold">
-            <img src={logo} alt="logo" className="rounded-full" />
-          </div>
-         <span className="text-2xl font-bold text-green-500">
-            Byte<span className="text-gray-900">Trek</span>Forge
-          </span>
+          {/* Spacer for mobile sidebar button */}
+          <div className="w-9 sm:hidden" />
+
+          <h1
+            className="
+              font-semibold text-green-600
+              text-base sm:text-lg lg:text-xl
+              whitespace-nowrap
+            "
+          >
+            Admin Panel
+          </h1>
         </div>
 
-        {/* Right: Admin + Logout */}
-        <div className="flex items-center gap-4">
-          <span className="text-gray-600 text-sm">
-            {/* Hi! <span className="font-medium">Admin</span> */}
-          </span>
-
+        {/* RIGHT SIDE */}
+        {admin && (
           <button
-            className="px-4 py-1.5 rounded-full border border-gray-400 text-gray-700 text-sm hover:bg-gray-100 transition"
+            onClick={handleLogout}
+            className="
+              px-4 py-1.5
+              cursor-pointer
+              text-sm
+              rounded-md
+              border border-gray-300
+              bg-gray-50
+              text-gray-600
+              hover:bg-gray-100
+              hover:text-gray-800
+              transition
+              focus:outline-none
+              focus:ring-2 focus:ring-green-400
+            "
           >
             Logout
           </button>
-        </div>
-
+        )}
       </div>
     </header>
   );

@@ -1,236 +1,7 @@
-// // import React, { useState, useContext } from "react";
-// // import { food_list, menu_list } from "../assets/assets";
-// // import FilterByCategory from "../components/FilterByCategory";
-// // import SearchBar from "./SearchBar";
-// // import Title from "./Title";
-// // import Filter from "./Filter";
-// // import { FoodContext } from "../context/CartContext";
-
-// // const FoodItems = () => {
-// //   const [activeCategory, setActiveCategory] = useState(null);
-// //   const [searchText, setSearchText] = useState("");
-// //   const [sortOrder, setSortOrder] = useState("");
-// //   //cart
-// //   const { addToCart } = useContext(FoodContext);
-
-// //   const categories = menu_list.map((item) => ({
-// //     name: item.menu_name,
-// //     image: item.menu_image,
-// //   }));
-
-// //   let finalList = [...food_list];
-
-// //   // 1. Search Filter
-// //   finalList = finalList.filter((food) =>
-// //     food.name.toLowerCase().includes(searchText.toLowerCase())
-// //   );
-
-// //   // 2. Category Filter
-// //   if (activeCategory) {
-// //     finalList = finalList.filter((food) => food.category === activeCategory);
-// //   }
-
-// //   // 3. Sorting Filter
-// //   if (sortOrder === "high") {
-// //     finalList.sort((a, b) => b.price - a.price);
-// //   } else if (sortOrder === "low") {
-// //     finalList.sort((a, b) => a.price - b.price);
-// //   }
-
-// //   return (
-// //     <>
-// //       <SearchBar searchText={searchText} setSearchText={setSearchText} />
-
-// //       <div className="flex items-center mt-10 justify-between mx-32 sm:mx-10">
-// //         <Title text1="Food" text2="Menu" />
-// //         <Filter sortOrder={sortOrder} setSortOrder={setSortOrder} />
-// //       </div>
-
-// //       <div className="max-w-6xl px-2 py-10 mx-auto">
-// //         <FilterByCategory
-// //           categories={categories}
-// //           activeCategory={activeCategory}
-// //           setActiveCategory={setActiveCategory}
-// //         />
-
-// //         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mt-10">
-// //           {finalList.length > 0 ? (
-// //             finalList.map((food) => (
-// //               <div
-// //                 key={food._id}
-// //                 className="px-3 py-3 rounded-lg mx-2 my-4 border border-gray-200 shadow transition-transform duration-300 hover:scale-105"
-// //               >
-// //                 <div className="overflow-hidden rounded-lg">
-// //                   <img
-// //                     src={food.image}
-// //                     alt={food.name}
-// //                     className="w-full h-40 object-cover transition-transform duration-300 hover:scale-110"
-// //                   />
-// //                 </div>
-
-// //                 <h1 className="text-xl py-2 font-bold">{food.name}</h1>
-// //                 <p className="text-gray-600 text-sm">{food.description}</p>
-
-// //                 <div className="flex justify-between mt-2">
-// //                   <span className="text-green-600 font-bold">
-// //                     ₹{food.price}
-// //                   </span>
-// //                   <span className="text-gray-500 text-sm font-black">
-// //                     {food.category}
-// //                   </span>
-// //                 </div>
-
-// //                 {/* ✅ Simple add to cart */}
-// //                 <button
-// //   className="w-full mt-3 bg-green-500 text-white rounded-lg py-2"
-// //   onClick={() =>
-// //     addToCart({
-// //       id: String(food._id),     // <-- important fix
-// //       name: food.name,
-// //       image: food.image,
-// //       price: Number(food.price),
-// //       category: food.category,
-// //     })
-// //   }
-// // >
-// //   Add to Cart
-// // </button>
-
-// //               </div>
-// //             ))
-// //           ) : (
-// //             <p className="text-center text-gray-500 mt-10 text-lg">
-// //               No items found
-// //             </p>
-// //           )}
-// //         </div>
-// //       </div>
-// //     </>
-// //   );
-// // };
-
-// // export default FoodItems;
-// import React, { useState, useContext } from "react";
-// import { food_list, menu_list } from "../assets/assets";
-// import FilterByCategory from "../components/FilterByCategory";
-// import SearchBar from "./SearchBar";
-// import Title from "./Title";
-// import Filter from "./Filter";
-// import { CartContext } from "../context/CartContext";
-
-// const FoodItems = () => {
-//   const [activeCategory, setActiveCategory] = useState(null);
-//   const [searchText, setSearchText] = useState("");
-//   const [sortOrder, setSortOrder] = useState("");
-
-//   // ✅ cart
-//   const { addToCart } = useContext(CartContext);
-
-//   const categories = menu_list.map((item) => ({
-//     name: item.menu_name,
-//     image: item.menu_image,
-//   }));
-
-//   let finalList = [...food_list];
-
-//   // 1️⃣ Search Filter
-//   finalList = finalList.filter((food) =>
-//     food.name.toLowerCase().includes(searchText.toLowerCase())
-//   );
-
-//   // 2️⃣ Category Filter
-//   if (activeCategory) {
-//     finalList = finalList.filter(
-//       (food) => food.category === activeCategory
-//     );
-//   }
-
-//   // 3️⃣ Sorting Filter
-//   if (sortOrder === "high") {
-//     finalList.sort((a, b) => b.price - a.price);
-//   } else if (sortOrder === "low") {
-//     finalList.sort((a, b) => a.price - b.price);
-//   }
-
-//   return (
-//     <>
-//       <SearchBar searchText={searchText} setSearchText={setSearchText} />
-
-//       <div className="flex items-center mt-10 justify-between mx-32 sm:mx-10">
-//         <Title text1="Food" text2="Menu" />
-//         <Filter sortOrder={sortOrder} setSortOrder={setSortOrder} />
-//       </div>
-
-//       <div className="max-w-6xl px-2 py-10 mx-auto">
-//         <FilterByCategory
-//           categories={categories}
-//           activeCategory={activeCategory}
-//           setActiveCategory={setActiveCategory}
-//         />
-
-//         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mt-10">
-//           {finalList.length > 0 ? (
-//             finalList.map((food) => (
-//               <div
-//                 key={food._id}
-//                 className="px-3 py-3 rounded-lg mx-2 my-4 border border-gray-200 shadow transition-transform duration-300 hover:scale-105"
-//               >
-//                 <div className="overflow-hidden rounded-lg">
-//                   <img
-//                     src={food.image}
-//                     alt={food.name}
-//                     className="w-full h-40 object-cover transition-transform duration-300 hover:scale-110"
-//                   />
-//                 </div>
-
-//                 <h1 className="text-xl py-2 font-bold">{food.name}</h1>
-//                 <p className="text-gray-600 text-sm">{food.description}</p>
-
-//                 <div className="flex justify-between mt-2">
-//                   <span className="text-green-600 font-bold">
-//                     ₹{food.price}
-//                   </span>
-//                   <span className="text-gray-500 text-sm font-black">
-//                     {food.category}
-//                   </span>
-//                 </div>
-
-//                 {/* ✅ Add to Cart */}
-//                 <button
-//                   className="w-full mt-3 bg-green-500 text-white rounded-lg py-2"
-//                   onClick={() =>
-//                     addToCart({
-//                       id: String(food._id),
-//                       name: food.name,
-//                       image: food.image,
-//                       price: Number(food.price),
-//                       category: food.category,
-//                     })
-//                   }
-//                 >
-//                   Add to Cart
-//                 </button>
-//               </div>
-//             ))
-//           ) : (
-//             <p className="text-center text-gray-500 mt-10 text-lg">
-//               No items found
-//             </p>
-//           )}
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
-
-// export default FoodItems;
-
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import FilterByCategory from "../components/FilterByCategory";
 import SearchBar from "./SearchBar";
-import Title from "./Title";
-import Filter from "./Filter";
 import { CartContext } from "../context/CartContext";
 import { menu_list } from "../assets/assets";
 
@@ -241,22 +12,18 @@ const FoodItems = () => {
   const [sortOrder, setSortOrder] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // ✅ cart
   const { addToCart } = useContext(CartContext);
 
-  // Categories (from menu_list)
+  // Categories
   const categories = menu_list.map((item) => ({
     name: item.menu_name,
     image: item.menu_image,
   }));
 
-  // 🔥 Fetch foods from backend
+  // Fetch foods
   const fetchFoods = async () => {
     try {
-      const res = await axios.get(
-        "http://localhost:4000/api/products"
-      );
-
+      const res = await axios.get("http://localhost:4000/api/products");
       if (res.data.success) {
         setFoods(res.data.products);
       }
@@ -271,22 +38,22 @@ const FoodItems = () => {
     fetchFoods();
   }, []);
 
-  // 🔍 Filters
+  // Filters
   let finalList = [...foods];
 
-  // 1️⃣ Search
+  // Search
   finalList = finalList.filter((food) =>
     food.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  // 2️⃣ Category
+  // Category
   if (activeCategory) {
     finalList = finalList.filter(
       (food) => food.category === activeCategory
     );
   }
 
-  // 3️⃣ Sort
+  // Sort
   if (sortOrder === "high") {
     finalList.sort((a, b) => b.price - a.price);
   } else if (sortOrder === "low") {
@@ -295,7 +62,7 @@ const FoodItems = () => {
 
   if (loading) {
     return (
-      <p className="text-center mt-10 text-lg">
+      <p className="text-center mt-10 text-gray-600 text-lg">
         Loading foods...
       </p>
     );
@@ -303,73 +70,134 @@ const FoodItems = () => {
 
   return (
     <>
+      {/* SEARCH */}
       <SearchBar
         searchText={searchText}
         setSearchText={setSearchText}
       />
 
-      <div className="flex items-center mt-10 justify-between mx-32 sm:mx-10">
-        <Title text1="Food" text2="Menu" />
-        <Filter sortOrder={sortOrder} setSortOrder={setSortOrder} />
+      {/* TITLE + SORT (JUSTIFY BETWEEN, SMALL SIZE) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg sm:text-xl font-semibold">
+            <span className="text-gray-800">Food </span>
+            <span className="text-green-600">Menu</span>
+          </h2>
+
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(e.target.value)}
+            className="
+              text-sm
+              border border-gray-300
+              rounded-md
+              px-3 py-1.5
+              bg-white
+              outline-none
+              focus:ring-2 focus:ring-green-400
+            "
+          >
+            <option value="">Sort</option>
+            <option value="high">High to Low</option>
+            <option value="low">Low to High</option>
+          </select>
+        </div>
       </div>
 
-      <div className="max-w-6xl px-2 py-10 mx-auto">
+      {/* CONTENT */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {/* CATEGORY FILTER */}
         <FilterByCategory
           categories={categories}
           activeCategory={activeCategory}
           setActiveCategory={setActiveCategory}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 mt-10">
+        {/* FOOD GRID */}
+        <div
+          className="
+            grid gap-6 mt-8
+            grid-cols-1
+            sm:grid-cols-2
+            md:grid-cols-3
+            lg:grid-cols-4
+          "
+        >
           {finalList.length > 0 ? (
             finalList.map((food) => (
               <div
                 key={food._id}
-                className="px-3 py-3 rounded-lg mx-2 my-4 border border-gray-200 shadow transition-transform duration-300 hover:scale-105"
+                className="
+                  bg-white
+                  border border-gray-200
+                  rounded-xl
+                  shadow-sm
+                  hover:shadow-md
+                  transition
+                "
               >
-                <div className="overflow-hidden rounded-lg">
+                {/* IMAGE */}
+                <div className="overflow-hidden rounded-t-xl">
                   <img
                     src={`http://localhost:4000${food.image}`}
                     alt={food.name}
-                    className="w-full h-40 object-cover transition-transform duration-300 hover:scale-110"
+                    className="
+                      w-full h-44
+                      object-cover
+                      transition-transform
+                      duration-300
+                      hover:scale-110
+                    "
                   />
                 </div>
 
-                <h1 className="text-xl py-2 font-bold">
-                  {food.name}
-                </h1>
-                <p className="text-gray-600 text-sm">
-                  {food.description}
-                </p>
+                {/* CONTENT */}
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold">
+                    {food.name}
+                  </h3>
 
-                <div className="flex justify-between mt-2">
-                  <span className="text-green-600 font-bold">
-                    ₹{food.price}
-                  </span>
-                  <span className="text-gray-500 text-sm font-black">
-                    {food.category}
-                  </span>
+                  <p className="text-sm text-gray-600 line-clamp-2 mt-1">
+                    {food.description}
+                  </p>
+
+                  <div className="flex justify-between items-center mt-3">
+                    <span className="text-green-600 font-bold">
+                      ₹{food.price}
+                    </span>
+                    <span className="text-xs text-gray-500 font-medium">
+                      {food.category}
+                    </span>
+                  </div>
+
+                  {/* ADD TO CART */}
+                  <button
+                    onClick={() =>
+                      addToCart({
+                        id: String(food._id),
+                        name: food.name,
+                        image: food.image,
+                        price: Number(food.price),
+                        category: food.category,
+                      })
+                    }
+                    className="
+                      w-full mt-4
+                      bg-green-500
+                      hover:bg-green-600
+                      text-white
+                      py-2.5
+                      rounded-lg
+                      transition
+                    "
+                  >
+                    Add to Cart
+                  </button>
                 </div>
-
-                {/* ✅ Add to Cart */}
-                <button
-                  className="w-full mt-3 bg-green-500 text-white rounded-lg py-2"
-                  onClick={() =>
-                    addToCart({
-                      id: String(food._id),
-                      name: food.name,
-                      image: food.image,
-                      price: Number(food.price),
-                      category: food.category,
-                    })
-                  }
-                >
-                  Add to Cart
-                </button>
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-500 mt-10 text-lg">
+            <p className="col-span-full text-center text-gray-500 text-lg">
               No items found
             </p>
           )}

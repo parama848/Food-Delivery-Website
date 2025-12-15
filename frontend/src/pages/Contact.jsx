@@ -80,7 +80,7 @@ const Contact = () => {
               <FiPhone className="text-green-600 text-2xl" />
               <div>
                 <p className="font-semibold text-gray-700">Phone</p>
-                <p className="text-gray-500">+91 98765 43210</p>
+                <p className="text-gray-500">+91 8148497159</p>
               </div>
             </div>
 

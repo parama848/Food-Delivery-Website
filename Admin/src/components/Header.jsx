@@ -11,13 +11,13 @@ const Header = () => {
      ========================= */
   useEffect(() => {
     if (!admin) {
-      navigate("/admin/login", { replace: true });
+      navigate("/admin-login", { replace: true });
     }
   }, [admin, navigate]);
 
   const handleLogout = () => {
     logout();
-    navigate("/admin/login", { replace: true });
+    navigate("/admin-login", { replace: true });
   };
 
   return (
@@ -36,12 +36,12 @@ const Header = () => {
 
           <h1
             className="
-              font-semibold text-green-600
+              font-semibold text-gray-900
               text-base sm:text-lg lg:text-xl
               whitespace-nowrap
             "
           >
-            Admin Panel
+            Admin <span className="text-green-500"> Panel</span>
           </h1>
         </div>
 

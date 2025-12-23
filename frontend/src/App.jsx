@@ -52,7 +52,7 @@ const App = () => {
     <>
       <Navbar />
 
-      <div className="mx-10">
+      <div className="mx-2">
         <Routes>
           {/* 🔓 Public Route */}
           <Route path="/login" element={<Login />} />

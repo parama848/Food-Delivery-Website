@@ -1,5 +1,5 @@
 import React from "react";
-import logo from "../assets/logo.jpg";
+import footerlogo from "../assets/FooterLogo.png"
 import { Facebook, Instagram, Twitter } from "lucide-react";
 
 const Footer = () => {
@@ -11,13 +11,13 @@ const Footer = () => {
         <div className="flex flex-col items-center sm:items-start gap-3">
           <div className="flex items-center gap-1 cursor-pointer">
             <img
-              src={logo}
+              src={footerlogo}
               width={50}
               className="rounded-full w-14 sm:w-8 md:w-10 lg:w-14"
               alt="logo"
             />
-            <h1 className="text-2xl sm:text-xl lg:text-4xl md:text-3xl font-bold text-green-500">
-              Byte<span className="text-gray-900">Trek</span>Forge
+            <h1 className="text-2xl sm:text-xl lg:text-4xl md:text-3xl font-bold text-gray-900">
+              Quick <span className="text-green-400">Food</span>
             </h1>
           </div>
 

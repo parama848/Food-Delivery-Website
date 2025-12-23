@@ -8,7 +8,7 @@ import {
   Phone,
 } from "lucide-react";
 import React, { useContext, useState } from "react";
-import logo from "../assets/logo.jpg";
+import logo from "../assets/FooterLogo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 
@@ -51,8 +51,8 @@ const Navbar = () => {
         {/* LOGO */}
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} width={36} className="rounded-full" alt="logo" />
-          <span className="text-lg sm:text-2xl font-bold text-green-500">
-            Byte<span className="text-gray-900">Trek</span>Forge
+          <span className="text-lg sm:text-2xl font-bold">
+           Quick <span className="text-green-400">Food</span>
           </span>
         </Link>
 

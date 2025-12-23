@@ -4,13 +4,25 @@ import os from "os";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, os.tmpdir()); // REQUIRED for Vercel
+    // ✅ Vercel-safe temp directory
+    cb(null, os.tmpdir());
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
-const upload = multer({ storage });
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image files are allowed"), false);
+  }
+};
+
+const upload = multer({
+  storage,
+  fileFilter,
+});
 
 export default upload;

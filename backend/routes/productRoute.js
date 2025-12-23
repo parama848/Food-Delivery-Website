@@ -57,11 +57,7 @@ const router = express.Router();
  * CREATE PRODUCT (Image Upload)
  * POST /api/products
  */
-router.post(
-  "/",
-  upload.single("image"), // ✅ REQUIRED
-  createProduct
-);
+router.post("/", upload.single("image"), createProduct);
 
 /**
  * GET ALL PRODUCTS

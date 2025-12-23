@@ -9,28 +9,18 @@ const AdminLogin = () => {
   const navigate = useNavigate();
 
   const [isRegister, setIsRegister] = useState(false);
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-  /* =========================
-     AUTO REDIRECT LOGIC
-     ========================= */
   useEffect(() => {
-    if (admin) {
-      navigate("/");
-    }
+    if (admin) navigate("/");
   }, [admin, navigate]);
 
-  /* =========================
-     SUBMIT HANDLER
-     ========================= */
   const submitHandler = async (e) => {
     e.preventDefault();
-
     try {
       const url = isRegister
         ? `${backendUrl}/api/admin/register`
@@ -46,11 +36,7 @@ const AdminLogin = () => {
 
       if (data.success) {
         login(data);
-        toast.success(
-          isRegister
-            ? "Admin registered successfully"
-            : "Admin logged in successfully"
-        );
+        toast.success(isRegister ? "Admin registered" : "Admin logged in");
         navigate("/");
       }
     } catch (err) {
@@ -59,33 +45,25 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-gray-100 px-4">
       <form
         onSubmit={submitHandler}
         className="
-          bg-white rounded-xl shadow-md
-          w-full
-          sm:w-420px
-          lg:w-480px
-          p-6 sm:p-8
+          bg-white rounded-2xl shadow-xl
+          w-full max-w-md lg:max-w-lg
+          p-6 sm:p-8 lg:p-10
         "
       >
-        <h2
-          className="
-            font-bold text-center text-green-600
-            text-xl sm:text-2xl
-            mb-6
-          "
-        >
+        <h2 className="text-center text-2xl lg:text-3xl font-bold text-green-600 mb-8">
           {isRegister ? "Admin Register" : "Admin Login"}
         </h2>
 
-        {/* NAME (REGISTER ONLY) */}
+        {/* NAME */}
         {isRegister && (
           <input
             type="text"
             placeholder="Admin Name"
-            className="w-full mb-4 px-4 py-2.5 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full mb-5 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -96,7 +74,7 @@ const AdminLogin = () => {
         <input
           type="email"
           placeholder="Admin Email"
-          className="w-full mb-4 px-4 py-2.5 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full mb-5 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -106,7 +84,7 @@ const AdminLogin = () => {
         <input
           type="password"
           placeholder="Password"
-          className="w-full mb-5 px-4 py-2.5 border rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full mb-6 px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -115,22 +93,14 @@ const AdminLogin = () => {
         {/* BUTTON */}
         <button
           type="submit"
-          className="
-            w-full bg-green-600 text-white rounded
-            py-2.5
-            hover:bg-green-700 transition cursor-pointer
-          "
+          className="w-full py-3 bg-green-600 text-white rounded-lg font-medium text-lg hover:bg-green-700 transition"
         >
           {isRegister ? "Register" : "Login"}
         </button>
 
         {/* TOGGLE */}
         <p
-          className="
-            text-center text-gray-600 cursor-pointer
-            text-sm sm:text-base
-            mt-5
-          "
+          className="text-center text-gray-600 mt-6 cursor-pointer hover:text-green-600 transition"
           onClick={() => setIsRegister(!isRegister)}
         >
           {isRegister

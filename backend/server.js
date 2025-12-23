@@ -25,33 +25,25 @@ connectDB();
 connectCloudinary();
 
 /* ======================
-   TRUST PROXY
+   TRUST PROXY (Vercel)
 ====================== */
 app.set("trust proxy", 1);
+
 /* ======================
-   CORS CONFIG (FIXED)
+   CORS CONFIG (FINAL FIX)
 ====================== */
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "https://food-delivery-website-frontend-pi.vercel.app",
-  "https://food-delivery-website-admin-six.vercel.app"
+  "https://food-delivery-website-admin-six.vercel.app",
 ];
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // allow Postman / server-to-server
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      callback(new Error("Not allowed by CORS"));
-    },
+    origin: allowedOrigins, // ✅ ARRAY-BASED (IMPORTANT)
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
@@ -61,6 +53,7 @@ app.use(
 ====================== */
 app.use(express.json());
 app.use(cookieParser());
+
 /* ======================
    ROUTES
 ====================== */
@@ -68,11 +61,6 @@ app.use("/api/user", userRoute);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminAuthRoute);
-
-/* ======================
-   STATIC FILES
-====================== */
-// app.use("/uploads", express.static("uploads"));
 
 /* ======================
    HEALTH CHECK

@@ -1,37 +1,3 @@
-// import React from "react";
-// import Navbar from "./components/Navbar";
-// import { Route, Routes } from "react-router-dom";
-// import Home from "./pages/Home";
-// import About from "./pages/About";
-// import Contact from "./pages/Contact";
-// import Cart from "./pages/Cart";
-// import Footer from "./components/Footer";
-// import Login from "./pages/Login";
-
-
-
-// const App = () => {
-  
-//   return (
-//     <>
-      
-//         <Navbar />
-//         <div className="mx-10">
-//           <Routes>
-//             <Route path="/" element={<Home />} />
-//             <Route path="/about-us" element={<About />} />
-//             <Route path="/contact-us" element={<Contact />} />
-//             <Route path="/cart-items" element={<Cart />} />
-//               <Route path="/login" element={<Login />} />
-//           </Routes>
-//         </div>
-//         <Footer />
-      
-//     </>
-//   );
-// };
-
-// export default App;
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 

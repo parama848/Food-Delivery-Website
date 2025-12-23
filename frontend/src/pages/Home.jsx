@@ -1,8 +1,6 @@
 import React from "react";
-import Title from "../components/Title";
 import FoodItem from "../components/FoodItem";
-import SearchBar from "../components/SearchBar";
-import Filter from "../components/Filter";
+
 
 const Home = () => {
   return (

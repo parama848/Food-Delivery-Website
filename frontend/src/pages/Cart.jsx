@@ -6,6 +6,8 @@ const Cart = () => {
   const { cartItems, increaseQty, decreaseQty, removeItem } =
     useContext(CartContext);
 
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const totalPrice = cartItems.reduce(
     (sum, item) => sum + item.price * item.qty,
     0
@@ -40,7 +42,7 @@ const Cart = () => {
               >
                 {/* IMAGE */}
                 <img
-                  src={`http://localhost:4000${item.image}`}
+                  src={`${backendUrl}${item.image}`}
                   alt={item.name}
                   className="w-24 h-24 rounded-lg object-cover"
                 />

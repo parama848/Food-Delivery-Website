@@ -14,6 +14,8 @@ const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   /* =========================
      AUTO REDIRECT LOGIC
      ========================= */
@@ -31,8 +33,8 @@ const AdminLogin = () => {
 
     try {
       const url = isRegister
-        ? "http://localhost:4000/api/admin/register"
-        : "http://localhost:4000/api/admin/login";
+        ? `${backendUrl}/api/admin/register`
+        : `${backendUrl}/api/admin/login`;
 
       const payload = isRegister
         ? { name, email, password }
@@ -63,8 +65,8 @@ const AdminLogin = () => {
         className="
           bg-white rounded-xl shadow-md
           w-full
-          sm:w-[420px]
-          lg:w-[480px]
+          sm:w-420px
+          lg:w-480px
           p-6 sm:p-8
         "
       >

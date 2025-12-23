@@ -12,6 +12,8 @@ const FoodItems = () => {
   const [sortOrder, setSortOrder] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const { addToCart } = useContext(CartContext);
 
   // Categories
@@ -23,7 +25,7 @@ const FoodItems = () => {
   // Fetch foods
   const fetchFoods = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/products");
+      const res = await axios.get(`${backendUrl}/api/products`);
       if (res.data.success) {
         setFoods(res.data.products);
       }

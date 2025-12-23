@@ -10,6 +10,7 @@ const Checkout = () => {
 
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [loading, setLoading] = useState(false);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const [form, setForm] = useState({
     firstName: "",
@@ -66,7 +67,7 @@ const Checkout = () => {
       /* ===== COD ===== */
       if (paymentMethod === "COD") {
         const res = await axios.post(
-          "http://localhost:4000/api/orders/cod",
+          `${backendUrl}/api/orders/cod`,
           payload
         );
 

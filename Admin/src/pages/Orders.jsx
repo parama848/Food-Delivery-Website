@@ -11,8 +11,10 @@ const statusColor = {
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const fetchOrders = async () => {
-    const res = await axios.get("http://localhost:4000/api/orders/admin");
+    const res = await axios.get(`${backendUrl}/api/orders/admin`);
     if (res.data.success) {
       setOrders(res.data.orders);
     }
@@ -24,7 +26,7 @@ const AdminOrders = () => {
 
   const updateStatus = async (id, status) => {
     await axios.put(
-      `http://localhost:4000/api/orders/${id}/status`,
+      `${backendUrl}/api/orders/${id}/status`,
       { status }
     );
     fetchOrders();

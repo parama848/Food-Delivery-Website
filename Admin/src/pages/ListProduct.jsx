@@ -6,12 +6,14 @@ const ListProduct = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   /* ======================
      FETCH PRODUCTS
   ====================== */
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/products");
+      const res = await axios.get(`${backendUrl}/api/products`);
       if (res.data.success) {
         setProducts(res.data.products);
       }
@@ -30,7 +32,7 @@ const ListProduct = () => {
 
     try {
       const res = await axios.delete(
-        `http://localhost:4000/api/products/${id}`
+        `${backendUrl}/api/products/${id}`
       );
 
       if (res.data.success) {
@@ -106,7 +108,7 @@ const ListProduct = () => {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <img
-                        src={`http://localhost:4000${product.image}`}
+                        src={`${backendUrl}${product.image}`}
                         alt={product.name}
                         className="w-14 h-14 rounded border object-cover"
                       />

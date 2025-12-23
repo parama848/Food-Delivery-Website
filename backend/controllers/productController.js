@@ -1,23 +1,32 @@
+
 // import Product from "../models/productModel.js";
 
 // /**
-//  * @desc   Create a product
-//  * @route  POST /api/products
+//  * CREATE PRODUCT
+//  * POST /api/products
 //  */
 // export const createProduct = async (req, res) => {
 //   try {
-//     const { name, image, price, description, category } = req.body;
+//     const { name, price, description, category } = req.body;
 
-//     if (!name || !image || !price || !description || !category) {
+//     // validation
+//     if (!name || !price || !description || !category) {
 //       return res.status(400).json({
 //         success: false,
 //         message: "All fields are required",
 //       });
 //     }
 
+//     if (!req.file) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Product image is required",
+//       });
+//     }
+
 //     const product = await Product.create({
 //       name,
-//        image: `/uploads/${req.file.filename}`, 
+//       image: `/uploads/${req.file.filename}`, // multer file
 //       price,
 //       description,
 //       category,
@@ -28,6 +37,7 @@
 //       product,
 //     });
 //   } catch (error) {
+//     console.error(error);
 //     res.status(500).json({
 //       success: false,
 //       message: error.message,
@@ -36,8 +46,8 @@
 // };
 
 // /**
-//  * @desc   Get all products
-//  * @route  GET /api/products
+//  * GET ALL PRODUCTS
+//  * GET /api/products
 //  */
 // export const getAllProducts = async (req, res) => {
 //   try {
@@ -56,8 +66,8 @@
 // };
 
 // /**
-//  * @desc   Get single product
-//  * @route  GET /api/products/:id
+//  * GET SINGLE PRODUCT
+//  * GET /api/products/:id
 //  */
 // export const getProductById = async (req, res) => {
 //   try {
@@ -82,8 +92,10 @@
 //   }
 // };
 
-// // DELETE PRODUCT
-// // @route DELETE /api/products/:id
+// /**
+//  * DELETE PRODUCT
+//  * DELETE /api/products/:id
+//  */
 // export const deleteProduct = async (req, res) => {
 //   try {
 //     const product = await Product.findById(req.params.id);
@@ -110,6 +122,8 @@
 // };
 
 import Product from "../models/productModel.js";
+import cloudinary from "../config/cloudinary.js";
+import fs from "fs";
 
 /**
  * CREATE PRODUCT
@@ -119,7 +133,9 @@ export const createProduct = async (req, res) => {
   try {
     const { name, price, description, category } = req.body;
 
-    // validation
+    // ======================
+    // VALIDATION
+    // ======================
     if (!name || !price || !description || !category) {
       return res.status(400).json({
         success: false,
@@ -134,9 +150,25 @@ export const createProduct = async (req, res) => {
       });
     }
 
+    // ======================
+    // UPLOAD TO CLOUDINARY
+    // ======================
+    const result = await cloudinary.uploader.upload(
+      req.file.path,
+      {
+        folder: "food-products", // Cloudinary folder name
+      }
+    );
+
+    // delete local temp file (important)
+    fs.unlinkSync(req.file.path);
+
+    // ======================
+    // SAVE TO DB
+    // ======================
     const product = await Product.create({
       name,
-      image: `/uploads/${req.file.filename}`, // multer file
+      image: result.secure_url, // ✅ CLOUDINARY URL
       price,
       description,
       category,
@@ -147,10 +179,10 @@ export const createProduct = async (req, res) => {
       product,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Create product error:", error);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Failed to add product",
     });
   }
 };
@@ -161,7 +193,7 @@ export const createProduct = async (req, res) => {
  */
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().sort({ createdAt: -1 });
 
     res.status(200).json({
       success: true,
@@ -215,6 +247,17 @@ export const deleteProduct = async (req, res) => {
         success: false,
         message: "Product not found",
       });
+    }
+
+    // optional: delete image from Cloudinary
+    if (product.image) {
+      const publicId = product.image
+        .split("/")
+        .slice(-2)
+        .join("/")
+        .split(".")[0];
+
+      await cloudinary.uploader.destroy(publicId);
     }
 
     await product.deleteOne();

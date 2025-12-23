@@ -71,7 +71,7 @@ app.use("/api/admin", adminAuthRoute);
 /* ======================
    STATIC FILES
 ====================== */
-app.use("/uploads", express.static("uploads"));
+// app.use("/uploads", express.static("uploads"));
 
 /* ======================
    HEALTH CHECK

@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Checkout = () => {
   const { cartItems, clearCart } = useContext(CartContext);
@@ -11,6 +12,7 @@ const Checkout = () => {
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [loading, setLoading] = useState(false);
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     firstName: "",
@@ -29,7 +31,7 @@ const Checkout = () => {
   ===================== */
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.qty,
-    0
+    0,
   );
   const shippingFee = subtotal > 0 ? 10 : 0;
   const total = subtotal + shippingFee;
@@ -66,22 +68,24 @@ const Checkout = () => {
 
       /* ===== COD ===== */
       if (paymentMethod === "COD") {
-        const res = await axios.post(
-          `${backendUrl}/api/orders/cod`,
-          payload
-        );
+        const res = await axios.post(`${backendUrl}/api/orders/cod`, payload);
 
         if (res.data?.success) {
           toast.success("Order placed successfully (COD)");
+
           clearCart();
+
+          setTimeout(() => {
+            navigate("/my-orders");
+          }, 1000);
         }
       }
 
       /* ===== STRIPE ===== */
       if (paymentMethod === "STRIPE") {
         const res = await axios.post(
-          "http://localhost:4000/api/orders/stripe",
-          payload
+          `${backendUrl}/api/orders/stripe`,
+          payload,
         );
 
         if (res.data?.url) {
@@ -100,7 +104,6 @@ const Checkout = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-10">
-      
       {/* LEFT – DELIVERY INFO */}
       <div>
         <h2 className="text-2xl font-bold mb-6">
@@ -137,13 +140,33 @@ const Checkout = () => {
         />
 
         <div className="grid grid-cols-2 gap-4 mt-4">
-          <input name="city" placeholder="City" onChange={handleChange} className="input" />
-          <input name="state" placeholder="State" onChange={handleChange} className="input" />
+          <input
+            name="city"
+            placeholder="City"
+            onChange={handleChange}
+            className="input"
+          />
+          <input
+            name="state"
+            placeholder="State"
+            onChange={handleChange}
+            className="input"
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-4">
-          <input name="zipcode" placeholder="Zipcode" onChange={handleChange} className="input" />
-          <input name="country" placeholder="Country" onChange={handleChange} className="input" />
+          <input
+            name="zipcode"
+            placeholder="Zipcode"
+            onChange={handleChange}
+            className="input"
+          />
+          <input
+            name="country"
+            placeholder="Country"
+            onChange={handleChange}
+            className="input"
+          />
         </div>
 
         <input

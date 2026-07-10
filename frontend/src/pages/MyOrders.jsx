@@ -3,15 +3,20 @@ import axios from "axios";
 
 const STATUS_STEPS = ["PLACED", "PROCESSING", "SHIPPED", "DELIVERED"];
 
+const FALLBACK_IMAGE =
+  "https://res.cloudinary.com/dnd50doyj/image/upload/v1766499534/food_1_ra9ucb.png";
+
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openTrack, setOpenTrack] = useState(null);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
   const userEmail = localStorage.getItem("userEmail");
 
+  /* ======================
+     FETCH ORDERS
+  ====================== */
   useEffect(() => {
     if (!userEmail) {
       setLoading(false);
@@ -20,15 +25,16 @@ const MyOrders = () => {
 
     const fetchOrders = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/orders/my-orders`, {
-          params: { email: userEmail },
-        });
+        const res = await axios.get(
+          `${backendUrl}/api/orders/my-orders`,
+          { params: { email: userEmail } }
+        );
 
         if (res.data?.success) {
           setOrders(res.data.orders);
         }
       } catch (err) {
-        console.error(err);
+        console.error("Fetch orders failed:", err);
       } finally {
         setLoading(false);
       }
@@ -38,11 +44,19 @@ const MyOrders = () => {
   }, [userEmail]);
 
   if (loading) {
-    return <p className="text-center mt-10 text-gray-500">Loading orders...</p>;
+    return (
+      <p className="text-center mt-10 text-gray-500">
+        Loading orders...
+      </p>
+    );
   }
 
   if (!orders.length) {
-    return <p className="text-center mt-10 text-gray-500">No orders found</p>;
+    return (
+      <p className="text-center mt-10 text-gray-500">
+        No orders found
+      </p>
+    );
   }
 
   return (
@@ -51,6 +65,24 @@ const MyOrders = () => {
 
       {orders.map((order) => {
         const currentStep = STATUS_STEPS.indexOf(order.orderStatus);
+
+        /* ======================
+           IMAGE URL RESOLUTION
+        ====================== */
+        let imageUrl = FALLBACK_IMAGE;
+
+        const firstItemImage = order.items?.[0]?.image;
+
+        if (firstItemImage) {
+          // Cloudinary or external image
+          if (firstItemImage.startsWith("http")) {
+            imageUrl = firstItemImage;
+          }
+          // Old local uploads (LOCAL ONLY)
+          else if (firstItemImage.startsWith("/uploads")) {
+            imageUrl = `${backendUrl}${firstItemImage}`;
+          }
+        }
 
         return (
           <div
@@ -62,12 +94,11 @@ const MyOrders = () => {
               {/* LEFT */}
               <div className="flex gap-4">
                 <img
-                  src={
-                    order.items[0]?.image
-                      ? `${backendUrl}${order.items[0].image}`
-                      : "https://via.placeholder.com/60"
-                  }
+                  src={imageUrl}
                   alt="product"
+                  onError={(e) => {
+                    e.currentTarget.src = FALLBACK_IMAGE;
+                  }}
                   className="w-16 h-16 rounded object-cover"
                 />
 
@@ -88,16 +119,15 @@ const MyOrders = () => {
               {/* RIGHT */}
               <button
                 onClick={() =>
-                  setOpenTrack(openTrack === order._id ? null : order._id)
+                  setOpenTrack(
+                    openTrack === order._id ? null : order._id
+                  )
                 }
-                className="
-                  text-green-600
-                  font-medium
-                  text-sm
-                  self-start sm:self-auto
-                "
+                className="text-green-600 font-medium text-sm self-start sm:self-auto"
               >
-                {openTrack === order._id ? "Hide Tracking" : "Track Order"}
+                {openTrack === order._id
+                  ? "Hide Tracking"
+                  : "Track Order"}
               </button>
             </div>
 
@@ -127,17 +157,21 @@ const MyOrders = () => {
                     >
                       {/* DOT */}
                       <div
-                        className={`w-4 h-4 rounded-full z-10
-                          ${isCompleted ? "bg-green-500" : "bg-gray-300"}`}
+                        className={`w-4 h-4 rounded-full z-10 ${
+                          isCompleted
+                            ? "bg-green-500"
+                            : "bg-gray-300"
+                        }`}
                       ></div>
 
                       {/* TEXT */}
                       <div>
                         <p
-                          className={`font-medium text-sm sm:text-base
-                            ${
-                              isCompleted ? "text-green-600" : "text-gray-500"
-                            }`}
+                          className={`font-medium text-sm sm:text-base ${
+                            isCompleted
+                              ? "text-green-600"
+                              : "text-gray-500"
+                          }`}
                         >
                           {step}
                         </p>

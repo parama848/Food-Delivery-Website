@@ -6,7 +6,7 @@ import Orders from "./pages/Orders";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import AdminLogin from "./pages/AdminLogin";
-
+import UpdateProduct from "./pages/UpdateProduct";
 
 const App = () => {
   return (
@@ -21,7 +21,8 @@ const App = () => {
             <Route path="/" element={<CreateProduct />} />
             <Route path="/list-product" element={<ListProduct />} />
             <Route path="/orders" element={<Orders />} />
-            <Route path="/admin-login" element={<AdminLogin/>}/>
+            <Route path="/admin-login" element={<AdminLogin />} />
+            <Route path="/update-product/:id" element={<UpdateProduct />} />
           </Routes>
         </main>
       </div>

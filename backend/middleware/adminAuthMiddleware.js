@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import Admin from "../models/AdminModel.js";
 
-export const protectAdmin = async (req, res, next) => {
+const adminAuth = async (req, res, next) => {
   let token;
 
   if (
@@ -14,13 +14,17 @@ export const protectAdmin = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       req.admin = await Admin.findById(decoded.id).select("-password");
-      next();
+      return next();
     } catch (error) {
-      res.status(401).json({ success: false, message: "Not authorized" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authorized" });
     }
   }
 
-  if (!token) {
-    res.status(401).json({ success: false, message: "No token found" });
-  }
+  return res
+    .status(401)
+    .json({ success: false, message: "No token found" });
 };
+
+export default adminAuth;

@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
     image: {
-      type: String, // store image URL / Cloudinary URL
+      type: String,
       required: true,
     },
     price: {
@@ -23,8 +23,12 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    imagePublicId: {
+      type: String,
+      required: true,
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Product = mongoose.model("Product", productSchema);

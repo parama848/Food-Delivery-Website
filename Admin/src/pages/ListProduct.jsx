@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useContext } from "react";
 import { toast } from "react-toastify";
+import { AdminAuthContext } from "../context/AdminAuthContext";
+import { useNavigate } from "react-router-dom";
 
 const ListProduct = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const { api } = useContext(AdminAuthContext);
 
   /* ======================
      FETCH PRODUCTS
   ====================== */
   const fetchProducts = async () => {
     try {
-      const res = await axios.get(`${backendUrl}/api/products`);
+      const res = await api.get("/api/products");
+
       if (res.data.success) {
         setProducts(res.data.products);
       }
@@ -28,19 +31,18 @@ const ListProduct = () => {
      DELETE PRODUCT
   ====================== */
   const deleteProduct = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    if (!window.confirm("Are you sure you want to delete this product?"))
+      return;
 
     try {
-      const res = await axios.delete(
-        `${backendUrl}/api/products/${id}`
-      );
+      const res = await api.delete(`/api/products/${id}`);
 
       if (res.data.success) {
         toast.success("Product deleted");
-        setProducts(products.filter((item) => item._id !== id));
+        setProducts((prev) => prev.filter((item) => item._id !== id));
       }
     } catch (error) {
-      toast.error("Failed to delete product");
+      toast.error(error?.response?.data?.message || "Failed to delete product");
     }
   };
 
@@ -52,11 +54,7 @@ const ListProduct = () => {
      LOADING
   ====================== */
   if (loading) {
-    return (
-      <div className="p-6 text-gray-500 text-sm">
-        Loading products...
-      </div>
-    );
+    return <div className="p-6 text-gray-500 text-sm">Loading products...</div>;
   }
 
   return (
@@ -66,49 +64,35 @@ const ListProduct = () => {
           All Products
         </h2>
 
-        {/* TABLE WRAPPER */}
         <div className="bg-white border border-gray-200 rounded-lg overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead className="bg-gray-100 text-gray-700">
               <tr>
-                <th className="px-4 py-3 text-left font-medium">
-                  Product
-                </th>
-                <th className="px-4 py-3 text-left font-medium">
-                  Category
-                </th>
-                {/* PRICE HEADER (HIDDEN ON MOBILE) */}
+                <th className="px-4 py-3 text-left font-medium">Product</th>
+                <th className="px-4 py-3 text-left font-medium">Category</th>
                 <th className="px-4 py-3 text-left font-medium hidden sm:table-cell">
                   Price
                 </th>
-                <th className="px-4 py-3 text-right font-medium">
-                  Action
-                </th>
+                <th className="px-4 py-3 text-right font-medium">Action</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-gray-200">
               {products.length === 0 && (
                 <tr>
-                  <td
-                    colSpan="4"
-                    className="py-8 text-center text-gray-500"
-                  >
+                  <td colSpan="4" className="py-8 text-center text-gray-500">
                     No products found
                   </td>
                 </tr>
               )}
 
               {products.map((product) => (
-                <tr
-                  key={product._id}
-                  className="hover:bg-gray-50 transition"
-                >
+                <tr key={product._id} className="hover:bg-gray-50 transition">
                   {/* PRODUCT */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <img
-                        src={`${backendUrl}${product.image}`}
+                        src={product.image}
                         alt={product.name}
                         className="w-14 h-14 rounded border object-cover"
                       />
@@ -118,7 +102,6 @@ const ListProduct = () => {
                           {product.name}
                         </span>
 
-                        {/* PRICE — MOBILE ONLY */}
                         <span className="text-sm text-gray-500 sm:hidden">
                           ₹{product.price}
                         </span>
@@ -131,27 +114,46 @@ const ListProduct = () => {
                     {product.category}
                   </td>
 
-                  {/* PRICE — DESKTOP ONLY */}
+                  {/* PRICE */}
                   <td className="px-4 py-3 text-gray-700 hidden sm:table-cell">
                     ₹{product.price}
                   </td>
 
                   {/* ACTION */}
                   <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => deleteProduct(product._id)}
-                      className="
-                        px-4 py-1.5
-                        text-sm
-                        rounded-md
-                        border border-red-300
-                        text-red-600
-                        hover:bg-red-50
-                        transition
-                      "
-                    >
-                      Delete
-                    </button>
+                    <div className="flex justify-end gap-2">
+                      <button
+                        onClick={() =>
+                          navigate(`/update-product/${product._id}`)
+                        }
+                        className="
+        px-4 py-1.5
+        text-sm
+        rounded-md
+        border border-blue-300
+        text-blue-600
+        hover:bg-blue-50
+        transition
+      "
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        onClick={() => deleteProduct(product._id)}
+                        className="
+        px-4 py-1.5
+        text-sm
+        rounded-md
+        border border-red-300
+        text-red-600
+        hover:bg-red-50
+        transition
+      "
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

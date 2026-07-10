@@ -1,465 +1,16 @@
-import Product from "../models/productModel.js";
-import cloudinary from "../config/cloudinary.js";
-import fs from "fs";
-
-/**
- * CREATE PRODUCT
- * POST /api/products
- */
-export const createProduct = async (req, res) => {
-  let uploadedFilePath;
-
-  try {
-    const { name, price, description, category } = req.body;
-
-    /* ======================
-       VALIDATION
-    ====================== */
-    if (!name || !price || !description || !category) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
-
-    if (!req.file || !req.file.path) {
-      return res.status(400).json({
-        success: false,
-        message: "Product image is required",
-      });
-    }
-
-    uploadedFilePath = req.file.path;
-
-    /* ======================
-       UPLOAD TO CLOUDINARY
-    ====================== */
-    const result = await cloudinary.uploader.upload(uploadedFilePath, {
-      folder: "food-products",
-    });
-
-    if (!result || !result.secure_url) {
-      return res.status(500).json({
-        success: false,
-        message: "Image upload failed",
-      });
-    }
-
-    /* ======================
-       SAVE TO DATABASE
-    ====================== */
-    const product = await Product.create({
-      name,
-      image: result.secure_url,
-      price: Number(price),
-      description,
-      category,
-    });
-
-    res.status(201).json({
-      success: true,
-      product,
-    });
-  } catch (error) {
-    console.error("🔥 CREATE PRODUCT ERROR:", error);
-
-    res.status(500).json({
-      success: false,
-      message: "Failed to add product",
-    });
-  } finally {
-    /* ======================
-       SAFE TEMP FILE CLEANUP
-    ====================== */
-    if (uploadedFilePath && fs.existsSync(uploadedFilePath)) {
-      try {
-        fs.unlinkSync(uploadedFilePath);
-      } catch (err) {
-        console.warn("⚠️ Temp file cleanup failed:", err.message);
-      }
-    }
-  }
-};
-
-/**
- * GET ALL PRODUCTS
- * GET /api/products
- */
-export const getAllProducts = async (req, res) => {
-  try {
-    const products = await Product.find().sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      products,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-/**
- * GET SINGLE PRODUCT
- * GET /api/products/:id
- */
-export const getProductById = async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      product,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-/**
- * DELETE PRODUCT
- * DELETE /api/products/:id
- */
-export const deleteProduct = async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found",
-      });
-    }
-
-    // Remove image from Cloudinary
-    if (product.image) {
-      const publicId = product.image
-        .split("/")
-        .slice(-2)
-        .join("/")
-        .split(".")[0];
-
-      await cloudinary.uploader.destroy(publicId);
-    }
-
-    await product.deleteOne();
-
-    res.status(200).json({
-      success: true,
-      message: "Product deleted successfully",
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
-
-
-
-// // // import Product from "../models/productModel.js";
-
-// // // /**
-// // //  * CREATE PRODUCT
-// // //  * POST /api/products
-// // //  */
-// // // export const createProduct = async (req, res) => {
-// // //   try {
-// // //     const { name, price, description, category } = req.body;
-
-// // //     // validation
-// // //     if (!name || !price || !description || !category) {
-// // //       return res.status(400).json({
-// // //         success: false,
-// // //         message: "All fields are required",
-// // //       });
-// // //     }
-
-// // //     if (!req.file) {
-// // //       return res.status(400).json({
-// // //         success: false,
-// // //         message: "Product image is required",
-// // //       });
-// // //     }
-
-// // //     const product = await Product.create({
-// // //       name,
-// // //       image: `/uploads/${req.file.filename}`, // multer file
-// // //       price,
-// // //       description,
-// // //       category,
-// // //     });
-
-// // //     res.status(201).json({
-// // //       success: true,
-// // //       product,
-// // //     });
-// // //   } catch (error) {
-// // //     console.error(error);
-// // //     res.status(500).json({
-// // //       success: false,
-// // //       message: error.message,
-// // //     });
-// // //   }
-// // // };
-
-// // // /**
-// // //  * GET ALL PRODUCTS
-// // //  * GET /api/products
-// // //  */
-// // // export const getAllProducts = async (req, res) => {
-// // //   try {
-// // //     const products = await Product.find();
-
-// // //     res.status(200).json({
-// // //       success: true,
-// // //       products,
-// // //     });
-// // //   } catch (error) {
-// // //     res.status(500).json({
-// // //       success: false,
-// // //       message: error.message,
-// // //     });
-// // //   }
-// // // };
-
-// // // /**
-// // //  * GET SINGLE PRODUCT
-// // //  * GET /api/products/:id
-// // //  */
-// // // export const getProductById = async (req, res) => {
-// // //   try {
-// // //     const product = await Product.findById(req.params.id);
-
-// // //     if (!product) {
-// // //       return res.status(404).json({
-// // //         success: false,
-// // //         message: "Product not found",
-// // //       });
-// // //     }
-
-// // //     res.status(200).json({
-// // //       success: true,
-// // //       product,
-// // //     });
-// // //   } catch (error) {
-// // //     res.status(500).json({
-// // //       success: false,
-// // //       message: error.message,
-// // //     });
-// // //   }
-// // // };
-
-// // // /**
-// // //  * DELETE PRODUCT
-// // //  * DELETE /api/products/:id
-// // //  */
-// // // export const deleteProduct = async (req, res) => {
-// // //   try {
-// // //     const product = await Product.findById(req.params.id);
-
-// // //     if (!product) {
-// // //       return res.status(404).json({
-// // //         success: false,
-// // //         message: "Product not found",
-// // //       });
-// // //     }
-
-// // //     await product.deleteOne();
-
-// // //     res.status(200).json({
-// // //       success: true,
-// // //       message: "Product deleted successfully",
-// // //     });
-// // //   } catch (error) {
-// // //     res.status(500).json({
-// // //       success: false,
-// // //       message: error.message,
-// // //     });
-// // //   }
-// // // };
-
-// // import Product from "../models/productModel.js";
-// // import cloudinary from "../config/cloudinary.js";
-// // import fs from "fs";
-
-// // /**
-// //  * CREATE PRODUCT
-// //  * POST /api/products
-// //  */
-// // export const createProduct = async (req, res) => {
-// //   try {
-// //     const { name, price, description, category } = req.body;
-
-// //     // ======================
-// //     // VALIDATION
-// //     // ======================
-// //     if (!name || !price || !description || !category) {
-// //       return res.status(400).json({
-// //         success: false,
-// //         message: "All fields are required",
-// //       });
-// //     }
-
-// //     if (!req.file) {
-// //       return res.status(400).json({
-// //         success: false,
-// //         message: "Product image is required",
-// //       });
-// //     }
-
-// //     // ======================
-// //     // UPLOAD TO CLOUDINARY
-// //     // ======================
-// //     const result = await cloudinary.uploader.upload(
-// //       req.file.path,
-// //       {
-// //         folder: "food-products", // Cloudinary folder name
-// //       }
-// //     );
-
-// //     // delete local temp file (important)
-// //     fs.unlinkSync(req.file.path);
-
-// //     // ======================
-// //     // SAVE TO DB
-// //     // ======================
-// //     const product = await Product.create({
-// //       name,
-// //       image: result.secure_url, // ✅ CLOUDINARY URL
-// //       price,
-// //       description,
-// //       category,
-// //     });
-
-// //     res.status(201).json({
-// //       success: true,
-// //       product,
-// //     });
-// //   } catch (error) {
-// //     console.error("Create product error:", error);
-// //     res.status(500).json({
-// //       success: false,
-// //       message: "Failed to add product",
-// //     });
-// //   }
-// // };
-
-// // /**
-// //  * GET ALL PRODUCTS
-// //  * GET /api/products
-// //  */
-// // export const getAllProducts = async (req, res) => {
-// //   try {
-// //     const products = await Product.find().sort({ createdAt: -1 });
-
-// //     res.status(200).json({
-// //       success: true,
-// //       products,
-// //     });
-// //   } catch (error) {
-// //     res.status(500).json({
-// //       success: false,
-// //       message: error.message,
-// //     });
-// //   }
-// // };
-
-// // /**
-// //  * GET SINGLE PRODUCT
-// //  * GET /api/products/:id
-// //  */
-// // export const getProductById = async (req, res) => {
-// //   try {
-// //     const product = await Product.findById(req.params.id);
-
-// //     if (!product) {
-// //       return res.status(404).json({
-// //         success: false,
-// //         message: "Product not found",
-// //       });
-// //     }
-
-// //     res.status(200).json({
-// //       success: true,
-// //       product,
-// //     });
-// //   } catch (error) {
-// //     res.status(500).json({
-// //       success: false,
-// //       message: error.message,
-// //     });
-// //   }
-// // };
-
-// // /**
-// //  * DELETE PRODUCT
-// //  * DELETE /api/products/:id
-// //  */
-// // export const deleteProduct = async (req, res) => {
-// //   try {
-// //     const product = await Product.findById(req.params.id);
-
-// //     if (!product) {
-// //       return res.status(404).json({
-// //         success: false,
-// //         message: "Product not found",
-// //       });
-// //     }
-
-// //     // optional: delete image from Cloudinary
-// //     if (product.image) {
-// //       const publicId = product.image
-// //         .split("/")
-// //         .slice(-2)
-// //         .join("/")
-// //         .split(".")[0];
-
-// //       await cloudinary.uploader.destroy(publicId);
-// //     }
-
-// //     await product.deleteOne();
-
-// //     res.status(200).json({
-// //       success: true,
-// //       message: "Product deleted successfully",
-// //     });
-// //   } catch (error) {
-// //     res.status(500).json({
-// //       success: false,
-// //       message: error.message,
-// //     });
-// //   }
-// // };
 // import Product from "../models/productModel.js";
 // import cloudinary from "../config/cloudinary.js";
 // import fs from "fs";
 
-// /**
-//  * CREATE PRODUCT
-//  * POST /api/products
-//  */
+// /* ======================
+//    CREATE PRODUCT
+// ====================== */
 // export const createProduct = async (req, res) => {
+//   let tempFile;
+
 //   try {
 //     const { name, price, description, category } = req.body;
 
-//     /* ======================
-//        VALIDATION
-//     ====================== */
 //     if (!name || !price || !description || !category) {
 //       return res.status(400).json({
 //         success: false,
@@ -467,111 +18,78 @@ export const deleteProduct = async (req, res) => {
 //       });
 //     }
 
-//     if (!req.file || !req.file.path) {
+//     if (!req.file) {
 //       return res.status(400).json({
 //         success: false,
 //         message: "Product image is required",
 //       });
 //     }
 
-//     /* ======================
-//        UPLOAD TO CLOUDINARY
-//     ====================== */
-//     const result = await cloudinary.uploader.upload(req.file.path, {
+//     tempFile = req.file.path;
+
+//     const result = await cloudinary.uploader.upload(tempFile, {
 //       folder: "food-products",
 //     });
 
-//     // remove temp file (important for Vercel)
-//     fs.unlinkSync(req.file.path);
-
-//     /* ======================
-//        SAVE TO DATABASE
-//     ====================== */
 //     const product = await Product.create({
 //       name,
-//       image: result.secure_url, // ✅ Cloudinary URL
-//       price,
+//       price: Number(price),
 //       description,
 //       category,
+//       image: result.secure_url,
 //     });
 
-//     res.status(201).json({
-//       success: true,
-//       product,
-//     });
+//     res.status(201).json({ success: true, product });
 //   } catch (error) {
-//     console.error("Create product error:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Failed to add product",
-//     });
+//     console.error(error);
+//     res.status(500).json({ success: false, message: "Create product failed" });
+//   } finally {
+//     if (tempFile && fs.existsSync(tempFile)) {
+//       fs.unlinkSync(tempFile);
+//     }
 //   }
 // };
 
-// /**
-//  * GET ALL PRODUCTS
-//  * GET /api/products
-//  */
+// /* ======================
+//    GET ALL PRODUCTS
+// ====================== */
 // export const getAllProducts = async (req, res) => {
 //   try {
 //     const products = await Product.find().sort({ createdAt: -1 });
-
-//     res.status(200).json({
-//       success: true,
-//       products,
-//     });
+//     res.status(200).json({ success: true, products });
 //   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
+//     res.status(500).json({ success: false, message: error.message });
 //   }
 // };
 
-// /**
-//  * GET SINGLE PRODUCT
-//  * GET /api/products/:id
-//  */
+// /* ======================
+//    GET SINGLE PRODUCT
+// ====================== */
 // export const getProductById = async (req, res) => {
 //   try {
 //     const product = await Product.findById(req.params.id);
-
 //     if (!product) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Product not found",
-//       });
+//       return res.status(404).json({ success: false, message: "Product not found" });
 //     }
-
-//     res.status(200).json({
-//       success: true,
-//       product,
-//     });
+//     res.status(200).json({ success: true, product });
 //   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
+//     res.status(500).json({ success: false, message: error.message });
 //   }
 // };
 
-// /**
-//  * DELETE PRODUCT
-//  * DELETE /api/products/:id
-//  */
+// /* ======================
+//    DELETE PRODUCT  ✅ ADD THIS
+// ====================== */
 // export const deleteProduct = async (req, res) => {
 //   try {
 //     const product = await Product.findById(req.params.id);
 
 //     if (!product) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Product not found",
-//       });
+//       return res.status(404).json({ success: false, message: "Product not found" });
 //     }
 
 //     // delete image from Cloudinary
-//     if (product.image) {
+//     if (product.image?.startsWith("http")) {
 //       const publicId = product.image
 //         .split("/")
 //         .slice(-2)
@@ -588,9 +106,231 @@ export const deleteProduct = async (req, res) => {
 //       message: "Product deleted successfully",
 //     });
 //   } catch (error) {
-//     res.status(500).json({
-//       success: false,
-//       message: error.message,
-//     });
+//     res.status(500).json({ success: false, message: error.message });
 //   }
 // };
+
+import Product from "../models/productModel.js";
+import {cloudinary} from "../config/cloudinary.js";
+import fs from "fs";
+
+/* ======================
+   CREATE PRODUCT
+====================== */
+export const createProduct = async (req, res) => {
+  let tempFile = null;
+
+  try {
+    const { name, price, description, category } = req.body;
+
+    // Validation
+    if (!name || !price || !description || !category) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Check image
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "Product image is required",
+      });
+    }
+
+    tempFile = req.file.path;
+
+    // Upload image to Cloudinary
+    const result = await cloudinary.uploader.upload(tempFile, {
+      folder: "food-products",
+    });
+
+    // Create product
+    const product = await Product.create({
+      name,
+      price: Number(price),
+      description,
+      category,
+      image: result.secure_url,
+      imagePublicId: result.public_id,
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Product created successfully",
+      product,
+    });
+  } catch (error) {
+    console.error("Create Product Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  } finally {
+    // Delete temp file
+    if (tempFile && fs.existsSync(tempFile)) {
+      fs.unlinkSync(tempFile);
+    }
+  }
+};
+
+/* ======================
+   GET ALL PRODUCTS
+====================== */
+export const getAllProducts = async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    console.error("Get Products Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/* ======================
+   GET SINGLE PRODUCT
+====================== */
+export const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error("Get Product Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+
+/* ======================
+   UPDATE PRODUCT
+====================== */
+
+/* ======================
+   UPDATE PRODUCT
+====================== */
+export const updateProduct = async (req, res) => {
+  let tempFile = null;
+
+  try {
+    const { id } = req.params;
+    const { name, price, description, category } = req.body;
+
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    const updatedData = {
+      name: name || product.name,
+      price: price ? Number(price) : product.price,
+      description: description || product.description,
+      category: category || product.category,
+    };
+
+    // Update image if a new image is uploaded
+    if (req.file) {
+      tempFile = req.file.path;
+
+      if (product.imagePublicId) {
+        await cloudinary.uploader.destroy(product.imagePublicId);
+      }
+
+      const result = await cloudinary.uploader.upload(tempFile, {
+        folder: "food-products",
+      });
+
+      updatedData.image = result.secure_url;
+      updatedData.imagePublicId = result.public_id;
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      id,
+      updatedData,
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      product: updatedProduct,
+    });
+  } catch (error) {
+    console.error("Update Product Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  } finally {
+    if (tempFile && fs.existsSync(tempFile)) {
+      fs.unlinkSync(tempFile);
+    }
+  }
+};
+
+
+/* ======================
+   DELETE PRODUCT
+====================== */
+export const deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    // Delete image from Cloudinary
+    if (product.imagePublicId) {
+      await cloudinary.uploader.destroy(product.imagePublicId);
+    }
+
+    // Delete product from MongoDB
+    await product.deleteOne();
+
+    return res.status(200).json({
+      success: true,
+      message: "Product deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete Product Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};

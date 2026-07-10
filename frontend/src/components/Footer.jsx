@@ -55,7 +55,7 @@ const Footer = () => {
 
       {/* Bottom Area */}
       <div className="text-center text-gray-500 text-sm mt-8 border-t pt-4">
-        © {new Date().getFullYear()} ByteTrekForge. All rights reserved.
+        © {new Date().getFullYear()} Quick Food. All rights reserved.
       </div>
     </footer>
   );

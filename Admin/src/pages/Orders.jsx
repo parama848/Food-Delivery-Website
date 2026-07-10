@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useContext } from "react";
+import { AdminAuthContext } from "../context/AdminAuthContext";
+import { toast } from "react-toastify";
 
 const statusColor = {
   PLACED: "bg-blue-100 text-blue-600",
@@ -10,13 +11,36 @@ const statusColor = {
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
+  const { api } = useContext(AdminAuthContext);
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
+  /* ======================
+     FETCH ORDERS (ADMIN)
+  ====================== */
   const fetchOrders = async () => {
-    const res = await axios.get(`${backendUrl}/api/orders/admin`);
-    if (res.data.success) {
-      setOrders(res.data.orders);
+    try {
+      const res = await api.get("/api/orders/admin");
+
+      if (res.data.success) {
+        setOrders(res.data.orders);
+      }
+    } catch (error) {
+      toast.error("Failed to fetch orders");
+    }
+  };
+
+  /* ======================
+     UPDATE ORDER STATUS
+  ====================== */
+  const updateStatus = async (id, status) => {
+    try {
+      const res = await api.put(`/api/orders/${id}/status`, { status });
+
+      if (res.data.success) {
+        toast.success("Order status updated");
+        fetchOrders();
+      }
+    } catch (error) {
+      toast.error("Failed to update status");
     }
   };
 
@@ -24,20 +48,16 @@ const AdminOrders = () => {
     fetchOrders();
   }, []);
 
-  const updateStatus = async (id, status) => {
-    await axios.put(
-      `${backendUrl}/api/orders/${id}/status`,
-      { status }
-    );
-    fetchOrders();
-  };
-
   return (
     <div className="min-h-screen bg-gray-100 px-3 py-4 sm:px-6">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl sm:text-3xl font-bold mb-6">
           📦 Orders Management
         </h2>
+
+        {orders.length === 0 && (
+          <p className="text-gray-500 text-sm">No orders found</p>
+        )}
 
         {orders.map((order) => (
           <div
@@ -64,17 +84,11 @@ const AdminOrders = () => {
 
             {/* CONTENT */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              
               {/* PRODUCTS */}
               <div>
-                <p className="font-semibold mb-1 text-sm">
-                  Products
-                </p>
+                <p className="font-semibold mb-1 text-sm">Products</p>
                 {order.items.map((item, idx) => (
-                  <p
-                    key={idx}
-                    className="text-sm text-gray-700"
-                  >
+                  <p key={idx} className="text-sm text-gray-700">
                     {item.name} × {item.quantity}
                   </p>
                 ))}
@@ -82,9 +96,7 @@ const AdminOrders = () => {
 
               {/* CUSTOMER */}
               <div>
-                <p className="font-semibold mb-1 text-sm">
-                  Customer
-                </p>
+                <p className="font-semibold mb-1 text-sm">Customer</p>
                 <p className="text-sm">
                   {order.shippingAddress.firstName}{" "}
                   {order.shippingAddress.lastName}
@@ -112,9 +124,7 @@ const AdminOrders = () => {
 
               {/* PAYMENT */}
               <div>
-                <p className="font-semibold mb-1 text-sm">
-                  Payment
-                </p>
+                <p className="font-semibold mb-1 text-sm">Payment</p>
                 <p className="text-sm">
                   Method:{" "}
                   <span className="font-medium">
@@ -124,11 +134,10 @@ const AdminOrders = () => {
                 <p className="text-sm">
                   Status:{" "}
                   <span
-                    className={`font-semibold ${
-                      order.paymentStatus === "PAID"
+                    className={`font-semibold ${order.paymentStatus === "PAID"
                         ? "text-green-600"
                         : "text-orange-500"
-                    }`}
+                      }`}
                   >
                     {order.paymentStatus}
                   </span>

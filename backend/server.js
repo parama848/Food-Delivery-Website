@@ -4,12 +4,12 @@ import "dotenv/config";
 import cookieParser from "cookie-parser";
 
 import connectDB from "./config/mongodb.js";
-import connectCloudinary from "./config/cloudinary.js";
 
 import userRoute from "./routes/userRoute.js";
 import productRoutes from "./routes/productRoute.js";
 import orderRoutes from "./routes/orderRoute.js";
 import adminAuthRoute from "./routes/adminAuthRoute.js";
+import { connectCloudinary } from "./config/cloudinary.js";
 
 const app = express();
 
@@ -19,7 +19,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 /* ======================
-   CONNECT SERVICES
+   CONNECT DATABASE
 ====================== */
 connectDB();
 connectCloudinary();
@@ -30,18 +30,18 @@ connectCloudinary();
 app.set("trust proxy", 1);
 
 /* ======================
-   CORS CONFIG (FINAL FIX)
+   CORS CONFIG
 ====================== */
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "https://food-delivery-website-frontend-pi.vercel.app",
-  "https://food-delivery-website-admin-six.vercel.app"
+  "https://food-delivery-website-admin-six.vercel.app",
 ];
 
 app.use(
   cors({
-    origin: allowedOrigins, // ✅ ARRAY-BASED (IMPORTANT)
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -68,7 +68,7 @@ app.use("/api/admin", adminAuthRoute);
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "API Working 🚀",
+    message: "API Working!",
   });
 });
 
@@ -76,5 +76,5 @@ app.get("/", (req, res) => {
    START SERVER
 ====================== */
 app.listen(PORT, () => {
-  console.log(`✅ Server running on PORT: ${PORT}`);
+  console.log(` Server running on PORT: ${PORT}`);
 });

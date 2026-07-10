@@ -26,7 +26,7 @@ createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <AdminAuthProvider>
-        <ToastContainer position="top-right" autoClose={3000} />
+        <ToastContainer position="top-right" autoClose={500} />
         <App />
       </AdminAuthProvider>
     </BrowserRouter>

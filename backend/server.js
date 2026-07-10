@@ -36,6 +36,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "https://food-delivery-website-client.vercel.app",
+  "https://food-delivery-website-manager-opal.vercel.app"
 ];
 
 app.use(

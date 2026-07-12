@@ -1,7 +1,6 @@
 import React from "react";
 import FoodItem from "../components/FoodItem";
 
-
 const Home = () => {
   return (
     <>

@@ -4,6 +4,7 @@ import FilterByCategory from "../components/FilterByCategory";
 import SearchBar from "./SearchBar";
 import { CartContext } from "../context/CartContext";
 import { menu_list } from "../assets/assets";
+import { toast } from "react-toastify";
 
 const FALLBACK_IMAGE =
   "https://res.cloudinary.com/dnd50doyj/image/upload/v1766499534/food_1_ra9ucb.png";
@@ -16,15 +17,14 @@ const FoodItems = () => {
   const [loading, setLoading] = useState(true);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const { addToCart } = useContext(CartContext);
 
-  /* ======================
-     FETCH PRODUCTS
-  ====================== */
   useEffect(() => {
     const fetchFoods = async () => {
       try {
         const res = await axios.get(`${backendUrl}/api/products`);
+
         if (res.data.success) {
           setFoods(res.data.products);
         }
@@ -38,21 +38,16 @@ const FoodItems = () => {
     fetchFoods();
   }, []);
 
-  /* ======================
-     FILTERS
-  ====================== */
   let finalList = [...foods];
 
   if (searchText) {
     finalList = finalList.filter((food) =>
-      food.name.toLowerCase().includes(searchText.toLowerCase())
+      food.name.toLowerCase().includes(searchText.toLowerCase()),
     );
   }
 
   if (activeCategory) {
-    finalList = finalList.filter(
-      (food) => food.category === activeCategory
-    );
+    finalList = finalList.filter((food) => food.category === activeCategory);
   }
 
   if (sortOrder === "high") {
@@ -71,25 +66,25 @@ const FoodItems = () => {
 
   return (
     <>
-      <SearchBar
-        searchText={searchText}
-        setSearchText={setSearchText}
-      />
+      <SearchBar searchText={searchText} setSearchText={setSearchText} />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 mt-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-semibold">
+          <h2 className="text-lg sm:text-2xl font-bold">
             <span className="text-gray-800">Food </span>
+
             <span className="text-green-600">Menu</span>
           </h2>
 
           <select
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
-            className="text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-white outline-none focus:ring-2 focus:ring-green-400"
+            className="text-xs sm:text-sm border border-gray-300 rounded-md px-3 py-2 bg-white outline-none focus:ring-2 focus:ring-green-400"
           >
             <option value="">Sort</option>
+
             <option value="high">High to Low</option>
+
             <option value="low">Low to High</option>
           </select>
         </div>
@@ -105,13 +100,16 @@ const FoodItems = () => {
           setActiveCategory={setActiveCategory}
         />
 
-        <div className="grid gap-6 mt-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {/* GRID */}
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mt-8">
           {finalList.map((food) => (
             <div
               key={food._id}
               className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden"
             >
               {/* IMAGE */}
+
               <img
                 src={
                   food.image && typeof food.image === "string"
@@ -124,40 +122,51 @@ const FoodItems = () => {
                 onError={(e) => {
                   e.currentTarget.src = FALLBACK_IMAGE;
                 }}
-                className="w-full h-44 object-cover"
+                className="w-full h-28 sm:h-44 object-cover"
               />
 
               {/* CONTENT */}
-              <div className="p-4">
-                <h3 className="text-lg font-semibold">{food.name}</h3>
 
-                <p className="text-sm text-gray-600 line-clamp-2 mt-1">
+              <div className="p-3 sm:p-4">
+                <h3 className="text-sm sm:text-lg font-semibold line-clamp-1">
+                  {food.name}
+                </h3>
+
+                <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-1">
                   {food.description}
                 </p>
 
                 <div className="flex justify-between items-center mt-3">
-                  <span className="text-green-600 font-bold">
+                  <span className="text-green-600 font-bold text-sm sm:text-lg">
                     ₹{food.price}
                   </span>
-                  <span className="text-xs text-gray-500 font-medium">
+
+                  <span className="text-[10px] sm:text-xs text-gray-500 font-medium">
                     {food.category}
                   </span>
                 </div>
 
                 <button
-                  onClick={() =>
+                  onClick={() => {
                     addToCart({
                       id: String(food._id),
                       name: food.name,
                       image: food.image,
                       price: Number(food.price),
                       category: food.category,
-                    })
-                  }
-                  className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white py-2.5 rounded-lg transition"
+                    });
+
+                    toast.success(`${food.name} added to cart`, {
+                      position: "top-center",
+                      autoClose: 2000,
+                      hideProgressBar: true,
+                    });
+                  }}
+                  className="w-full mt-3 bg-green-500 hover:bg-green-600 text-white py-2 sm:py-2.5 rounded-lg text-xs sm:text-base font-medium transition"
                 >
                   Add to Cart
                 </button>
+                
               </div>
             </div>
           ))}

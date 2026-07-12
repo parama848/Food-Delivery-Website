@@ -7,43 +7,50 @@ export const CartContextProvider = ({ children }) => {
   /* ======================
      🔐 AUTH
   ====================== */
-  const [token, setToken] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+
+  const [token, setToken] = useState(
+    localStorage.getItem("token") || ""
+  );
+
+  const [userEmail, setUserEmail] = useState(
+    localStorage.getItem("userEmail") || ""
+  );
 
   /* ======================
      🛒 CART (PER USER)
   ====================== */
+
   const [cartItems, setCartItems] = useState([]);
 
   /* ======================
      🌐 BACKEND
   ====================== */
+
   const backendUrl =
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+    import.meta.env.VITE_BACKEND_URL ||
+    "http://localhost:4000";
 
   const api = axios.create({
     baseURL: backendUrl,
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type":
+        "application/json",
+    },
   });
-
-  /* ======================
-     🔁 LOAD AUTH ON REFRESH
-  ====================== */
-  useEffect(() => {
-    const t = localStorage.getItem("token");
-    const e = localStorage.getItem("userEmail");
-
-    if (t) setToken(t);
-    if (e) setUserEmail(e);
-  }, []);
 
   /* ======================
      🔁 LOAD CART PER USER
   ====================== */
+
   useEffect(() => {
     if (userEmail) {
       const savedCart =
-        JSON.parse(localStorage.getItem(`cart_${userEmail}`)) || [];
+        JSON.parse(
+          localStorage.getItem(
+            `cart_${userEmail}`
+          )
+        ) || [];
+
       setCartItems(savedCart);
     } else {
       setCartItems([]);
@@ -53,6 +60,7 @@ export const CartContextProvider = ({ children }) => {
   /* ======================
      🔁 SAVE CART PER USER
   ====================== */
+
   useEffect(() => {
     if (userEmail) {
       localStorage.setItem(
@@ -65,24 +73,43 @@ export const CartContextProvider = ({ children }) => {
   /* ======================
      🛒 CART ACTIONS
   ====================== */
+
   const addToCart = (item) => {
     setCartItems((prev) => {
-      const exists = prev.find((i) => i.id === item.id);
+      const exists = prev.find(
+        (i) => i.id === item.id
+      );
 
       if (exists) {
         return prev.map((i) =>
-          i.id === item.id ? { ...i, qty: i.qty + 1 } : i
+          i.id === item.id
+            ? {
+                ...i,
+                qty: i.qty + 1,
+              }
+            : i
         );
       }
 
-      return [...prev, { ...item, qty: 1 }];
+      return [
+        ...prev,
+        {
+          ...item,
+          qty: 1,
+        },
+      ];
     });
   };
 
   const increaseQty = (id) => {
     setCartItems((prev) =>
       prev.map((i) =>
-        i.id === id ? { ...i, qty: i.qty + 1 } : i
+        i.id === id
+          ? {
+              ...i,
+              qty: i.qty + 1,
+            }
+          : i
       )
     );
   };
@@ -91,23 +118,36 @@ export const CartContextProvider = ({ children }) => {
     setCartItems((prev) =>
       prev
         .map((i) =>
-          i.id === id ? { ...i, qty: i.qty - 1 } : i
+          i.id === id
+            ? {
+                ...i,
+                qty: i.qty - 1,
+              }
+            : i
         )
         .filter((i) => i.qty > 0)
     );
   };
 
   const removeItem = (id) => {
-    setCartItems((prev) => prev.filter((i) => i.id !== id));
+    setCartItems((prev) =>
+      prev.filter(
+        (i) => i.id !== id
+      )
+    );
   };
 
   /* ======================
-     ✅ CLEAR CART (AFTER ORDER)
+     ✅ CLEAR CART
   ====================== */
+
   const clearCart = () => {
     setCartItems([]);
+
     if (userEmail) {
-      localStorage.removeItem(`cart_${userEmail}`);
+      localStorage.removeItem(
+        `cart_${userEmail}`
+      );
     }
   };
 
@@ -119,6 +159,7 @@ export const CartContextProvider = ({ children }) => {
         userEmail,
         setUserEmail,
         cartItems,
+        setCartItems,
         addToCart,
         increaseQty,
         decreaseQty,

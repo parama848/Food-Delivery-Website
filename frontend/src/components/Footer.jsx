@@ -1,12 +1,12 @@
 import React from "react";
-import footerlogo from "../assets/FooterLogo.png"
+import footerlogo from "../assets/FooterLogo.png";
 import { Facebook, Instagram, Twitter } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
     <footer className="bg-white border-t mt-16 pt-10 pb-5">
       <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-3 gap-10">
-
         {/* Logo + Tagline */}
         <div className="flex flex-col items-center sm:items-start gap-3">
           <div className="flex items-center gap-1 cursor-pointer">
@@ -35,22 +35,39 @@ const Footer = () => {
 
         {/* Quick Links */}
         <div className="flex flex-col items-center sm:items-start gap-2 text-gray-700">
-          <h3 className="font-semibold text-lg">Quick Links</h3>
-          <a href="#" className="hover:text-green-600 text-sm">Home</a>
-          <a href="#" className="hover:text-green-600 text-sm">About</a>
-          <a href="#" className="hover:text-green-600 text-sm">Contact</a>
-          <a href="#" className="hover:text-green-600 text-sm">Cart</a>
+          <Link to="/" className="hover:text-green-600 text-sm">
+            Home
+          </Link>
+
+          <Link to="/about-us" className="hover:text-green-600 text-sm">
+            About
+          </Link>
+
+          <Link to="/contact-us" className="hover:text-green-600 text-sm">
+            Contact
+          </Link>
+
+          <Link to="/cart-items" className="hover:text-green-600 text-sm">
+            Cart
+          </Link>
         </div>
 
         {/* Support Section */}
         <div className="flex flex-col items-center sm:items-start gap-2 text-gray-700">
           <h3 className="font-semibold text-lg">Support</h3>
-          <a href="#" className="hover:text-green-600 text-sm">Privacy Policy</a>
-          <a href="#" className="hover:text-green-600 text-sm">Terms & Conditions</a>
-          <a href="#" className="hover:text-green-600 text-sm">Help Center</a>
-          <a href="#" className="hover:text-green-600 text-sm">Feedback</a>
+          <a href="#" className="hover:text-green-600 text-sm">
+            Privacy Policy
+          </a>
+          <a href="#" className="hover:text-green-600 text-sm">
+            Terms & Conditions
+          </a>
+          <a href="#" className="hover:text-green-600 text-sm">
+            Help Center
+          </a>
+          <a href="#" className="hover:text-green-600 text-sm">
+            Feedback
+          </a>
         </div>
-
       </div>
 
       {/* Bottom Area */}

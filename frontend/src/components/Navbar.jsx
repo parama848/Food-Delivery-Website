@@ -6,40 +6,44 @@ import {
   LogOut,
   Info,
   Phone,
+  Home,
 } from "lucide-react";
 import React, { useContext, useState } from "react";
 import logo from "../assets/FooterLogo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
-  const {
-    cartItems,
-    token,
-    userEmail,
-    setToken,
-    setUserEmail,
-    setCartItems,
-  } = useContext(CartContext);
+  const { cartItems, token, userEmail, setToken, setUserEmail, setCartItems } =
+    useContext(CartContext);
 
-  const cartCount = cartItems.reduce(
-    (t, i) => t + (Number(i.qty) || 0),
-    0
-  );
+  const cartCount = cartItems.reduce((t, i) => t + (Number(i.qty) || 0), 0);
 
   const logoutHandler = () => {
-    setToken("");
-    setUserEmail("");
-    setCartItems([]);
-    localStorage.removeItem("token");
-    localStorage.removeItem("userEmail");
-    navigate("/login");
     setShowDropdown(false);
     setOpen(false);
+
+    toast.success("Logged out successfully", {
+      position: "top-center",
+      autoClose: 2500,
+      hideProgressBar: true,
+    });
+
+    setTimeout(() => {
+      setToken("");
+      setUserEmail("");
+      setCartItems([]);
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("userEmail");
+
+      navigate("/login");
+    }, 300);
   };
 
   const avatarLetter = userEmail?.charAt(0)?.toUpperCase();
@@ -52,7 +56,7 @@ const Navbar = () => {
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} width={36} className="rounded-full" alt="logo" />
           <span className="text-lg sm:text-2xl font-bold">
-           Quick <span className="text-green-400">Food</span>
+            Quick <span className="text-green-400">Food</span>
           </span>
         </Link>
 
@@ -132,9 +136,7 @@ const Navbar = () => {
           <div className="absolute right-0 top-0 h-full w-72 bg-white shadow-lg flex flex-col">
             {/* HEADER */}
             <div className="flex items-center justify-between px-4 py-4 border-b">
-              <h2 className="text-base font-semibold text-gray-800">
-                Menu
-              </h2>
+              <h2 className="text-base font-semibold text-gray-800">Menu</h2>
               <button onClick={() => setOpen(false)}>
                 <X size={22} />
               </button>
@@ -142,6 +144,14 @@ const Navbar = () => {
 
             {/* BODY */}
             <div className="flex-1 px-4 py-4 space-y-4">
+              <Link
+                to="/"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2 text-gray-700"
+              >
+                <Home size={18} />
+                Home
+              </Link>
               <Link
                 to="/cart-items"
                 onClick={() => setOpen(false)}

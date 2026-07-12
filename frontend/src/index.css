@@ -24,3 +24,12 @@
 .pay-box.active {
   @apply border-green-400 bg-green-50;
 }
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
